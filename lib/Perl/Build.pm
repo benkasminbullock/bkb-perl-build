@@ -25,7 +25,17 @@ $dir =~ s/\.pm//;
 my $template_dir = "$dir/templates";
 my $tt;
 
-our $badfiles = qr!(\.tmpl|-out\.txt|(?:make-pod|build)\.pl|xt\/.*\.t)$!;
+our $badfiles = qr!(
+		       \.tmpl
+		   |
+		       -out\.txt
+		   |
+		       (?:make-pod|build)\.pl
+		   |
+		       xt\/.*\.t
+		   |
+		       \.(?:travis|appveyor)\.yml
+		   )$!x;
 
 sub perl_build
 {
