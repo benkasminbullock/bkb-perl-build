@@ -26,7 +26,7 @@ my $cmdir = "$proj/c-maker";
 my $pdir = "$proj/purge";
 my $udir = "$proj/unicode-c";
 my @libs = ($pbdir, $ddir, $cmdir, $pdir);
-my $copied = "$Bin/copied";
+my $copied = "$Bin";
 my $lib = "$copied/lib";
 my $verbose;
 #my $verbose = 1;
