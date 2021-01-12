@@ -1,13 +1,23 @@
 This is a repository containing build files needed to build my CPAN
 modules from the git repository.
 
+You do not need these files to build from the CPAN repository, so if
+you are only interested in installing one of my modules then please
+use cpanm or what have you as usual to do that, e.g.
+
+	cpanm JSON::Parse
+
+etc.
+
 My CPAN ID is BKB, and my github ID is benkasminbullock.
 
-The contents are copied here from other directories by the script
-"copy.pl". It doesn't copy the documentation or other supporting
-files, only the bits of code which are needed to build from the git
-repositories.
+This is not the central repository of my non-distributed modules. The
+contents of this repository are copied here from other directories of
+my local system by the script "copy.pl". This script doesn't copy the
+documentation or other supporting files, only the bits of code which
+are needed to build from the git repositories.
 
 If you need the documentation, email me at benkasminbullock@gmail.com
 or bkb@cpan.org, or put an issue in or something.
+
 
