@@ -1,0 +1,13 @@
+This is a repository containing build files needed to build my CPAN
+modules from the git repository.
+
+My CPAN ID is BKB, and my github ID is benkasminbullock.
+
+The contents are copied here from other directories by the script
+"copy.pl". It doesn't copy the documentation or other supporting
+files, only the bits of code which are needed to build from the git
+repositories.
+
+If you need the documentation, email me at benkasminbullock@gmail.com
+or bkb@cpan.org, or put an issue in or something.
+
