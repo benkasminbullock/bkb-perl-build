@@ -336,7 +336,6 @@ sub ssh_mkdir
 {
     my ($host, $dir, $verbose) = @_;
     do_ssh ($host, "if [ ! -d $dir ]; then mkdir -p $dir; fi", $verbose);
-#    do_ssh ($host, "if [ ! -d $dir ]; then echo boo; fi", $verbose);
 }
 
 

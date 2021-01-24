@@ -782,7 +782,7 @@ sub trans_to_json_file
 {
     my ($trans_file, $json_file) = @_;
     my $translations = read_translations_table ($trans_file);
-    my $json = create_json ($translations);
+    my $json = create_json ($translations, indent => 1, sort => 1);
     open my $out, ">:encoding(utf8)", $json_file
         or croak "open $json_file: $!";
     print $out $json;
