@@ -42,13 +42,13 @@ sub perl_build
     my (%inputs) = @_;
 
     my $ok = GetOptions (
-    "clean" => \my $clean,
-    "dist" => \my $dist,
-    "pan" => \my $pan,
-    "add" => \my $add,
-    "install" => \my $install,
-    "kover" => \my $cover,
-    "verbose" => \my $verbose,
+	"clean" => \my $clean,
+	"dist" => \my $dist,
+	"pan" => \my $pan,
+	"add" => \my $add,
+	"install" => \my $install,
+	"kover" => \my $cover,
+	"verbose" => \my $verbose,
     );
 
     if (! $ok) {
@@ -423,10 +423,11 @@ sub pan
     if (-d "xt") {
 	print "Running extra tests\n";
 	my $blib = "-I blib/lib -I blib/arch";
-	for my $file (<xt/*.t>) {
-	    print "Running tests in $file.\n";
-	    do_system ("prove $blib $file");
-	}
+	# for my $file (<xt/*.t>) {
+	#     print "Running tests in $file.\n";
+	#     do_system ("prove $blib $file");
+	# }
+	do_system ("prove xt/*.t", $inputs{verbose});
     }
     print "Running 'make disttest'.\n";
     do_system ("make disttest > /dev/null");
