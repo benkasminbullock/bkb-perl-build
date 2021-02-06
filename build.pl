@@ -4,5 +4,6 @@ use strict;
 use FindBin '$Bin';
 use Perl::Build;
 perl_build (
+    pre => "$Bin/copy.pl",
 );
 

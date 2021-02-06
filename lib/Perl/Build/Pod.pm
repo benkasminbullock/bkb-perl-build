@@ -1,31 +1,37 @@
 # Copied from /home/ben/projects/perl-build/lib/Perl/Build/Pod.pm
 package Perl::Build::Pod;
-use parent Exporter;
-our @EXPORT_OK = qw/
-		       extract_vars
-		       get_dep_section
-		       make_examples
-		       make_pod
-		       pbtmpl
-		       pod_checker
-		       pod_encoding_ok
-		       pod_exports
-		       pod_link_checker
-		       pod_no_cut
-		       simple_pod
-		       xtidy
-		   /;
-our %EXPORT_TAGS = (all => \@EXPORT_OK);
 
 use warnings;
 use strict;
 use utf8;
+
+require Exporter;
+our @ISA = qw(Exporter);
+our @EXPORT_OK = qw/
+    $mod_re
+    extract_vars
+    get_dep_section
+    make_examples
+    make_pod
+    mod2info
+    pbtmpl
+    pod_checker
+    pod_encoding_ok
+    pod_exports
+    pod_link_checker
+    pod_no_cut
+    see_also
+    simple_pod
+    xtidy
+/;
+our %EXPORT_TAGS = (all => \@EXPORT_OK);
 
 use Carp;
 use File::Slurper qw/read_text read_lines/;
 use FindBin '$Bin';
 use Getopt::Long;
 use JSON::Create;
+use JSON::Parse ':all';
 use Pod::Checker;
 use Pod::Select;
 use Test::Pod;
@@ -495,6 +501,35 @@ sub simple_pod
 	$options{verbose} = $verbose;
     }
     make_pod (%options);
+}
+
+our $mod_re = qr!\[\%\s*cpm\(['"](.*?)['"]\)\s*\%\]!;
+
+sub see_also
+{
+    my ($pod) = @_;
+    die unless -f $pod;
+    my $text = read_text ($pod);
+    if (! ($text =~ s!^.*=head1 SEE ALSO(.*?)(?:=head1.*$|\z)!$1!gsm)) {
+	die "Could not find see also";
+    }
+    return $text;
+}
+
+sub mod2info
+{
+    my ($file) = @_;
+    my $see_also_info = read_json ($file);
+    my %mod2info;
+    for (@$see_also_info) {
+	$_->{date} =~ s/T.*$//;
+	$_->{log_fav} = 0;
+	if ($_->{fav} > 0) {
+	    $_->{log_fav} = int (log ($_->{fav}) / log (10)) + 1;
+	}
+	$mod2info{$_->{module}} = $_;
+    }
+    return \%mod2info;
 }
 
 1;

@@ -7,17 +7,17 @@ use strict;
 use utf8;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw/
-		       read_translations
-		       get_lang_trans
-		       write_translations
-		       read_translations_table
-		       write_translations_table
-		       add_translations_table 
-		       get_single_trans
-		       get_lang_name
-		       trans_to_json_file
-		       %lang2name
-		   /;
+    %lang2name
+    add_translations_table 
+    get_lang_name
+    get_lang_trans
+    get_single_trans
+    read_translations
+    read_translations_table
+    trans_to_json_file
+    write_translations
+    write_translations_table
+/;
 
 our %EXPORT_TAGS = (
     'all' => \@EXPORT_OK,
@@ -36,7 +36,9 @@ our $VERSION='0.001';
 sub location
 {
     my ($data_ref) = @_;
-    return "$data_ref->{file_name}:".$data_ref->{xml_parser}->current_line().": ";
+    my $file = $data_ref->{file_name};
+    my $line = $data_ref->{xml_parser}->current_line();
+    return "$file:$line: ";
 }
 
 sub tuv_start

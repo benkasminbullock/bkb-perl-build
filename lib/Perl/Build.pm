@@ -559,6 +559,10 @@ sub make_makefile
 sub get_commit
 {
     my (%inputs) = @_;
+    if (! -d ".git") {
+	warn "Not a git repository";
+	return {date => 'unknown', commit => 'unknown'};
+    }
     my $base = base (%inputs);
     chdir $base or die "Error chdir to $base: $!";
     my $temp = Path::Tiny->tempfile ();
