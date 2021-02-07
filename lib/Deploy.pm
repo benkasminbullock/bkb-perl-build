@@ -703,7 +703,7 @@ sub copy_those_files
     @files = grep !/\.pod(\.tmpl)?$/, @files;
     @files = grep !m!(/|^\.+)$!, @files;
     @files = grep !m!\.~[0-9+]~!, @files;
-    @files = map {s!^\./!!r} @files;
+    @files = map {s!^\./!!; $_} @files;
     if ($verbose) {
 	print "Files in $dir are @files\n";
     }
