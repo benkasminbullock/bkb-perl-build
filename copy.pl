@@ -54,6 +54,6 @@ for my $e (qw!c h!) {
     copy ("$udir/unicode.$e", "$cudir/unicode.$e");
 }
 
-#do_system ("git add $lib; git commit -m 'copied files'", $verbose);
+do_system ("git add .; git commit -m 'copied files'", $verbose);
 exit;
 

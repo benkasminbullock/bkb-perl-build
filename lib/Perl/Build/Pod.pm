@@ -183,6 +183,9 @@ sub pod_checker
 	print "# $line\n";
 	$errors++;
     }
+    if ($output =~ /([a-z])<.*?>/) {
+	push @oklines, "$1<>";
+    }
     return \@oklines;
 }
 
@@ -233,11 +236,14 @@ sub pod_link_checker
 	    print "link to $link at line $links{$link}\n";
 	}
 	if (my $line = $headers{$link}) {
-	    my $error = "$pod:$line: link to $link should be L</$link>?";
-	    if ($verbose) {
-		print "$error\n";
+	    # http://mikan/bugs/bug/2248
+	    if ($link !~ /^[A-Z][A-Za-z]+::/) {
+		my $error = "$pod:$line: link to $link should be L</$link>?";
+		if ($verbose) {
+		    print "$error\n";
+		}
+		push @errors, $error;
 	    }
-	    push @errors, $error;
 	}
 	if (my $fault = unlikely_link ($link)) {
 	    my $line = $links{$link};

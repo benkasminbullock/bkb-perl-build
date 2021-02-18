@@ -5,7 +5,15 @@ use warnings;
 use strict;
 our @ISA = qw(Exporter);
 our @EXPORT = qw/perl_build get_version get_commit get_info/;
-our @EXPORT_OK = qw/add dist clean c $badfiles build_dist/;
+our @EXPORT_OK = qw/
+    $badfiles
+    add
+    build_dist
+    c
+    clean
+    dist
+    versionup
+/;
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
 our $VERSION = '99999999.99';
 use Getopt::Long;
@@ -19,6 +27,7 @@ use C::Maker 'make_c_file';
 use File::Copy;
 use IPC::Run3;
 use Path::Tiny;
+use File::Slurper qw!read_text write_text!;
 
 my $dir = __FILE__;
 $dir =~ s/\.pm//;
@@ -427,7 +436,7 @@ sub pan
 	#     print "Running tests in $file.\n";
 	#     do_system ("prove $blib $file");
 	# }
-	do_system ("prove xt/*.t", $inputs{verbose});
+	do_system ("prove $blib xt/*.t", $inputs{verbose});
     }
     print "Running 'make disttest'.\n";
     do_system ("make disttest > /dev/null");
@@ -608,6 +617,25 @@ sub build_dist
 	die; 
     }
     return $tf;
+}
+
+sub versionup
+{
+    my ($dir, $pmfiles, $version, $newversion) = @_;
+    for my $file (@$pmfiles) {
+	my $bfile = "$dir/$file";
+	my $text = read_text ($bfile);
+	if ($text =~ s/\Q$version\E\b/$newversion/g) {
+	    print "$file OK\n";
+	    write_text ($bfile, $text);
+	}
+	elsif ($text =~ /'\Q$newversion\E'/) {
+	    warn "$file already at $newversion";
+	}
+	else {
+	    warn "$file failed";
+	}
+    }
 }
 
 1;
