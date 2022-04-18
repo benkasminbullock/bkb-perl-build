@@ -7,37 +7,37 @@ require Exporter;
 our @ISA = qw(Exporter);
 
 our @EXPORT_OK = qw/
-		       add_with_dir
-		       batch_edit
-		       check_master
-		       copy_files
-		       copy_those_files
-		       copy_to_temp
-		       copy_to_temp_ref
-		       do_nfsn
-		       do_scp
-		       do_scp_get
-		       do_ssh
-		       do_system
-		       dump_manifest
-		       env_path
-		       file_slurp
-		       get_log_files
-		       get_git_sha
-		       gzip_scp_file
-		       latest
-		       local_install
-		       make_date
-		       make_date_time
-		       make_temp_dir
-		       mdate
-		       older
-		       rm_rf
-		       ssh_mkdir
-		       upload
-		       upload_dir
-		       write_ro_file
-		   /;
+    add_with_dir
+    batch_edit
+    check_master
+    copy_files
+    copy_those_files
+    copy_to_temp
+    copy_to_temp_ref
+    do_nfsn
+    do_scp
+    do_scp_get
+    do_ssh
+    do_system
+    dump_manifest
+    env_path
+    file_slurp
+    get_log_files
+    get_git_sha
+    gzip_scp_file
+    latest
+    local_install
+    make_date
+    make_date_time
+    make_temp_dir
+    mdate
+    older
+    rm_rf
+    ssh_mkdir
+    upload
+    upload_dir
+    write_ro_file
+/;
 
 our %EXPORT_TAGS = ('all' => \@EXPORT_OK);
 our $VERSION='0.05';
@@ -70,6 +70,10 @@ sub older
     my ($file_a, $file_b) = @_;
     if (! -f $file_a) {
         return 1;
+    }
+    if (! -f $file_b) {
+	carp "File '$file_b' doesn't exist";
+	return 1;
     }
     my $mdate_a = mdate ($file_a);
     my $mdate_b = mdate ($file_b);

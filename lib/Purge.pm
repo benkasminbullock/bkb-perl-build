@@ -1,9 +1,4 @@
 # Copied from /home/ben/projects/purge/lib/Purge.pm
-=head1 NAME
-
-Purge - remove backup files
-
-=cut
 package Purge;
 require Exporter;
 @ISA = qw(Exporter);

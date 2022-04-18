@@ -2,12 +2,12 @@
 package Perl::Build::Dist;
 use parent Exporter;
 our @EXPORT_OK = qw/
-		       bad_modules
-		       depend
-		       check_bad_modules
-		       check_dep_section
-		       check_makefile_dep
-		   /;
+    bad_modules
+    depend
+    check_bad_modules
+    check_dep_section
+    check_makefile_dep
+/;
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
 use warnings;
 use strict;
@@ -17,18 +17,18 @@ use Carp;
 use Module::Extract::Use;
 use Test::More;
 use Perl::Build::Pod 'get_dep_section';
-use JSON::Parse 'json_file_to_perl';
+use JSON::Parse 'read_json';
 use Deploy qw/do_system older/;
 
 # This is a list of modules which I try not to use in production code.
 
 my @badmods = qw/
-		     autodie
-		     Path::Tiny
-		     File::Slurp
-		     IPC::Run3
-		     Modern::Perl
-		 /;
+    autodie
+    Path::Tiny
+    File::Slurp
+    IPC::Run3
+    Modern::Perl
+/;
 my %badmods;
 @badmods{@badmods} = (1) x @badmods;
 
@@ -108,6 +108,7 @@ NEVERMATCH
 |utf8
 |warn
 |warnings
+|feature
 )!x;
 
 sub check_makefile_dep
@@ -122,7 +123,7 @@ sub check_makefile_dep
 	    die "no $meta";
 	}
     }
-    my $minfo = json_file_to_perl ($meta);
+    my $minfo = read_json ($meta);
     my $runreq = $minfo->{prereqs}{runtime}{requires};
     my %mods;
     for my $module (@$modules) {

@@ -22,12 +22,12 @@ use Template;
 use FindBin '$Bin';
 use Purge;
 use File::Path;
-use Carp;
+use Carp qw!carp croak confess cluck!;
 use C::Maker 'make_c_file';
 use File::Copy;
 use IPC::Run3;
-use Path::Tiny;
-use File::Slurper qw!read_text write_text!;
+use File::Slurper qw!read_text write_text read_lines!;
+use File::Temp 'tempfile';
 
 my $dir = __FILE__;
 $dir =~ s/\.pm//;
@@ -481,8 +481,7 @@ sub get_info
 	}
 	return \%info;
     }
-    my $mpath = path ($makefilepl);
-    my $mtext = $mpath->slurp ();
+    my $mtext = read_text ($makefilepl);
     my %mvars;
     # Only match top-level variables
     while ($mtext =~ /^my\s*\$(\w+)\s*=\s*['"]([^'"]+)['"]/gsm) {
@@ -503,8 +502,7 @@ sub get_info
     if ($mvars{pm}) {
 	my $pm = $mvars{pm};
 	$info{pm} = $pm;
-	my $pmpath = path ("$base/$pm");
-	my $pmtext = $pmpath->slurp ();
+	my $pmtext = read_text ("$base/$pm");
 	if ($pmtext =~ /VERSION\s*=\s*['"]([^'"]+)['"]/) {
 	    my $version = $1;
 	    if ($inputs{verbose}) {
@@ -568,15 +566,16 @@ sub make_makefile
 sub get_commit
 {
     my (%inputs) = @_;
-    if (! -d ".git") {
-	warn "Not a git repository";
-	return {date => 'unknown', commit => 'unknown'};
-    }
     my $base = base (%inputs);
     chdir $base or die "Error chdir to $base: $!";
-    my $temp = Path::Tiny->tempfile ();
+    if (! -d "$base/.git") {
+	cluck "No .git in $base; not a git repository?";
+	return {date => 'unknown', commit => 'unknown'};
+    }
+    my ($fh, $temp) = tempfile ();
+    close $fh or die $!;
     do_system ("git log -n 1 > $temp");
-    my @lines = $temp->lines ();
+    my @lines = read_lines ($temp);
     if (! @lines) {
 	die "no lines";
     }

@@ -26,7 +26,7 @@ our @EXPORT_OK = qw/
 /;
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
 
-use Carp;
+use Carp qw!carp croak cluck confess!;
 use File::Slurper qw/read_text read_lines/;
 use FindBin '$Bin';
 use Getopt::Long;
@@ -342,6 +342,9 @@ for debugging.
 sub extract_vars
 {
     my ($module, $vars, %options) = @_;
+    if (! $module) {
+	croak "Specify module as first argument";
+    }
     if ($module =~ m!/!) {
 	warn "$module looks wrong; use \$info->{colon} not \$info->{pm}";
     }
@@ -365,16 +368,15 @@ sub extract_vars
 		print "Adding $var to variables.\n";
 	    }
 	    my $nodollar = $1;
-	    $vars->{$nodollar} = eval "\$$module::$nodollar";
+	    $vars->{$nodollar} = eval "\$${module}::$nodollar";
 	}
 	elsif ($var =~ /((\@|\%)(.*))/) {
 	    my $variable = $1;
 	    my $sigil = $2;
 	    my $nosigil = $3;
-	    my $export = "\\$sigil$module::$nosigil";
+	    my $export = "\\$sigil${module}::$nosigil";
 	    if ($verbose) {
 		print "Adding $variable as $export.\n";
-		
 	    }
 	    $vars->{$nosigil} = eval $export;
 	}
