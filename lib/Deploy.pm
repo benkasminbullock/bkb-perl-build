@@ -282,6 +282,9 @@ sub do_scp_get
     die "No host" unless $host;
     die "No files specified" unless $files;
     $local_dir = "." unless $local_dir;
+    if (! -d $local_dir) {
+	warn "$local_dir is not a directory: multiple files will be overwritten";
+    }
     my $command = "scp $host:$files $local_dir";
     my $devnull = ' > /dev/null ';
     if ($verbose) {
