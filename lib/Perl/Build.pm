@@ -34,17 +34,24 @@ $dir =~ s/\.pm//;
 my $template_dir = "$dir/templates";
 my $tt;
 
-our $badfiles = qr!(
-		       \.tmpl
-		   |
-		       -out\.txt
-		   |
-		       (?:make-pod|build)\.pl
-		   |
-		       xt\/.*\.t
-		   |
-		       \.(?:travis|appveyor)\.yml
-		   )$!x;
+my $perl = '/home/ben/software/install/bin/perl';
+
+# Files which should not be in the CPAN distribution. This is exported
+# out of this module and used to match stuff when checking distros.
+
+our $badfiles = qr!
+    (
+	\.tmpl
+    |
+	-out\.txt
+    |
+	(?:make-pod|build)\.pl
+    |
+	xt\/.*\.t
+    |
+	\.(?:travis|appveyor)\.yml
+    )$
+!x;
 
 sub perl_build
 {
@@ -139,9 +146,7 @@ sub build
     }
     if ($make_pod) {
 	eval {
-	    # Use "perl" here since $make_pod probably contains local
-	    # Perl path.
-	    do_system ("perl $make_pod");
+	    do_system ("$perl $make_pod", $inputs{verbose});
 	};
 	if ($@) {
 	    warn "Pod build failed: $@\n";
@@ -190,7 +195,7 @@ sub build
 	if ($inputs{verbose}) {
 	    $devnull = '';
 	}
-        do_system ("perl Makefile.PL $devnull;make $devnull;make test",
+        do_system ("$perl Makefile.PL $devnull;make $devnull;make test",
 		   $inputs{verbose});
     }
     elsif ($inputs{makefile}) {
@@ -289,9 +294,6 @@ sub clean
 	    print "Removing generated README.\n";
 	    push @unneeded, 'README';
 	}
-    }
-    if (-f '') {
-
     }
     for my $file (@unneeded) {
         if (-f $file) {
@@ -412,7 +414,7 @@ sub pan
     # in MANIFEST.
 
     # Make MYMETA.json
-    do_system ("perl Makefile.PL");
+    do_system ("$perl Makefile.PL");
     # Make the README
     my $readme = 'README';
     if (-f $readme) {
