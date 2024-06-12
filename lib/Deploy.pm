@@ -2,6 +2,8 @@
 package Deploy;
 use warnings;
 use strict;
+no warnings 'experimental::signatures';
+use feature 'signatures';
 
 require Exporter;
 our @ISA = qw(Exporter);
@@ -18,6 +20,7 @@ our @EXPORT_OK = qw/
     do_scp
     do_scp_get
     do_ssh
+    do_ssh_out
     do_system
     dump_manifest
     env_path
@@ -626,7 +629,7 @@ sub get_git_sha
     $git_sha =~ s/\s+//g;
     my $diff = `git diff`;
     if ($diff) {
-	warn "There are uncommited changes in '$dir'.\n";
+	warn "There are uncommitted changes in '$dir'.\n";
     }
     chdir $cwd or die $!;
     return ($git_sha, $diff eq '' ? 1 : 0);
@@ -851,6 +854,17 @@ sub local_install
     if ($verbose) {
 	print "OK: Finished successfully.\n";
     }
+}
+
+sub do_ssh_out ($ssh_login, $command, $verbose) {
+    # Remote file
+    my $rf = "output.$$";
+    do_ssh ($ssh_login, "$command > $rf 2>&1", $verbose);
+    do_scp_get ($ssh_login, $rf, undef, $verbose);
+    do_ssh ($ssh_login, "rm $rf", $verbose);
+    my $t = read_text ($rf);
+    unlink $rf;
+    return $t;
 }
 
 1;

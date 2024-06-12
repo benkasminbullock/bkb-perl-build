@@ -86,6 +86,12 @@ EOF
         $inputs{verbose} = 1;
     }
 
+    if ($install) {
+	if ($verbose) {
+	    print "Installing module...\n";
+	}
+    }
+
     # Change the makefile behaviour if there are C files.
 
     if ($inputs{c} || $inputs{cmaker}) {
@@ -107,6 +113,7 @@ EOF
         add (%inputs);
     }
     elsif ($install) {
+	print "\nInstalling ***************************:\n\n";
         install (%inputs);
     }
     elsif ($cover) {
@@ -122,12 +129,20 @@ sub install
 {
     my %inputs = @_;
     build (%inputs);
+    my $verbose = $inputs{verbose};
     if (-f 'Makefile.PL' && -f 'Makefile') {
-        do_system ("make install > /dev/null");
+	my $null = "> /dev/null";
+	if ($verbose) {
+	    $null = '';
+	}
+        do_system ("make install $null", $verbose);
+	return;
     }
     if ($inputs{makefile}) {
-	do_system ("make install");
+	do_system ("make install", $verbose);
+	return;
     }
+    print "Install step failed because no makefile is set in inputs, nor does it look like a Perl module.\n";
 }
 
 sub cover
@@ -140,6 +155,13 @@ sub cover
 sub build
 {
     my %inputs = @_;
+    if ($inputs{pre}) {
+        my $pre = $inputs{pre};
+        if ($inputs{verbose}) {
+            print "Running pre-build script '$pre'.\n";
+        }
+        do_system ($pre);
+    }
     my $make_pod = $inputs{make_pod};
     if (! $make_pod && -f './make-pod.pl') {
 	$make_pod = './make-pod.pl';
@@ -169,13 +191,6 @@ sub build
     }
     if ($inputs{cmaker}) {
         push @{$inputs{stems}}, cmaker (%inputs);
-    }
-    if ($inputs{pre}) {
-        my $pre = $inputs{pre};
-        if ($inputs{verbose}) {
-            print "Running pre-build script '$pre'.\n";
-        }
-        do_system ($pre);
     }
     if ($inputs{stems}) {
         make_makefile (%inputs);
